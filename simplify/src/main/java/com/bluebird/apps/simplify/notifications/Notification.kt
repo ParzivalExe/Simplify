@@ -6,7 +6,11 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import androidx.core.app.NotificationCompat
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class Notification(var context: Context, var smallIcon: Int) {
 
@@ -15,6 +19,7 @@ class Notification(var context: Context, var smallIcon: Int) {
     var channelId: String? = null
     var actions: ArrayList<Action> = arrayListOf()
     var contentIntent: PendingIntent? = null
+    var iconTint: Int? = null
 
 
     constructor(context: Context, smallIcon: Int, messageTitle: String, messageText: String): this(context, smallIcon) {
@@ -27,6 +32,9 @@ class Notification(var context: Context, var smallIcon: Int) {
             setSmallIcon(smallIcon)
             setContentTitle(messageTitle)
             setContentText(messageText)
+            if(iconTint != null) {
+                color = iconTint!!
+            }
         }
         if(channelId != null) {
             builder.setChannelId(channelId!!)
@@ -44,7 +52,7 @@ class Notification(var context: Context, var smallIcon: Int) {
 
 
 
-    @Suppress("UNCHECKED_CAST")
+    @Suppress("UNCHECKED_CAST", "PLATFORM_CLASS_MAPPED_TO_KOTLIN")
     class Action {
 
         var broadcastReceiver: Class<BroadcastReceiver>? = null
@@ -56,7 +64,7 @@ class Notification(var context: Context, var smallIcon: Int) {
         var extras: HashMap<String, String> = hashMapOf()
 
 
-        constructor(actionClass: Class<Any>, actionId: String, actionIcon: Int, actionText: String, context: Context) {
+        constructor(actionClass: Class<Object>, actionId: String, actionIcon: Int, actionText: String, context: Context) {
             if(actionClass is Activity) {
                 this.activity = actionClass as Class<Activity>
             }else if(actionClass is BroadcastReceiver){
@@ -68,7 +76,7 @@ class Notification(var context: Context, var smallIcon: Int) {
             this.context = context
         }
 
-        constructor(actionClass: Class<Any>, actionId: String, actionIcon: Int, actionText: String, context: Context, extras: HashMap<String, String>) : this(actionClass, actionId, actionIcon, actionText, context) {
+        constructor(actionClass: Class<Object>, actionId: String, actionIcon: Int, actionText: String, context: Context, extras: HashMap<String, String>) : this(actionClass, actionId, actionIcon, actionText, context) {
             this.extras = extras
         }
 
