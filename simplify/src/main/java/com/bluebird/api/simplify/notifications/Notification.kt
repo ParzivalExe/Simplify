@@ -8,9 +8,13 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import kotlin.collections.ArrayList
+import kotlin.math.acos
 
+@Suppress("unused")
 class Notification(var context: Context, var smallIcon: Int, var channelId: String) {
 
     var messageTitle: String = "ValuesNotSet"
@@ -26,7 +30,7 @@ class Notification(var context: Context, var smallIcon: Int, var channelId: Stri
         this.channelId = channelId
     }
 
-    fun toNotificationCompat() : Notification {
+    private fun toNotificationCompat() : Notification {
         var builder = NotificationCompat.Builder(context, channelId).apply {
             setSmallIcon(smallIcon)
             setContentTitle(messageTitle)
@@ -71,10 +75,12 @@ class Notification(var context: Context, var smallIcon: Int, var channelId: Stri
 
 
         constructor(actionClass: Class<Object>, actionId: String, actionIcon: Int, actionText: String, context: Context) {
-            if(actionClass is Activity) {
-                this.activity = actionClass as Class<Activity>
-            }else if(actionClass is BroadcastReceiver){
-                this.broadcastReceiver = actionClass as Class<BroadcastReceiver>
+            if(actionClass.superclass != null) {
+                if (actionClass.superclass!!.name == NotificationActivity::class.java.name) {
+                    this.activity = actionClass as Class<Activity>
+                } else if (actionClass.superclass!!.name == NotificationBroadcastReceiver::class.java.name) {
+                    this.broadcastReceiver = actionClass as Class<BroadcastReceiver>
+                }
             }
             this.actionId = actionId
             this.actionIcon = actionIcon
@@ -105,6 +111,28 @@ class Notification(var context: Context, var smallIcon: Int, var channelId: Stri
                 return PendingIntent.getBroadcast(context, 0, intent, 0)
             }
             return null
+        }
+
+
+        abstract class NotificationBroadcastReceiver(var action: String) : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                if(context != null && intent != null) {
+                    if (intent.action == action) {
+                        actionReceived(context, intent)
+                    }
+                }
+            }
+            abstract fun actionReceived(context: Context, intent: Intent)
+        }
+
+        abstract class NotificationActivity(var action: String) : AppCompatActivity() {
+            override fun onCreate(savedInstanceState: Bundle?) {
+                super.onCreate(savedInstanceState)
+                if(intent != null && intent.action == action) {
+                    actionCreate(savedInstanceState, intent)
+                }
+            }
+            abstract fun actionCreate(savedInstanceState: Bundle?, intent: Intent)
         }
 
     }
