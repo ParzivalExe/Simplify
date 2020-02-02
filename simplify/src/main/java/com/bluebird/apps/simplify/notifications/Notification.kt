@@ -1,4 +1,4 @@
-package com.bluebird.apps.simplify.notifications
+package com.bluebird.apps.grouporg.api
 
 import android.app.Activity
 import android.app.Notification
@@ -9,25 +9,26 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
+import com.bluebird.apps.simplify.notifications.NotificationGroup
 import kotlin.collections.ArrayList
 
-class Notification(var context: Context, var smallIcon: Int) {
+class Notification(var context: Context, var smallIcon: Int, var channelId: String) {
 
     var messageTitle: String = "ValuesNotSet"
     var messageText: String = "Set a messageTitle and messageText for this notification to get rid of this default-text"
-    var channelId: String? = null
     var actions: ArrayList<Action> = arrayListOf()
     var contentIntent: PendingIntent? = null
     var iconTint: Int? = null
+    var group: NotificationGroup? = null
 
-
-    constructor(context: Context, smallIcon: Int, messageTitle: String, messageText: String): this(context, smallIcon) {
+    constructor(context: Context, smallIcon: Int, messageTitle: String, messageText: String, channelId: String): this(context, smallIcon, channelId) {
         this.messageTitle = messageTitle
         this.messageText =  messageText
+        this.channelId = channelId
     }
 
     fun toNotificationCompat() : Notification {
-        var builder = NotificationCompat.Builder(context).apply {
+        var builder = NotificationCompat.Builder(context, channelId).apply {
             setSmallIcon(smallIcon)
             setContentTitle(messageTitle)
             setContentText(messageText)
@@ -35,8 +36,8 @@ class Notification(var context: Context, var smallIcon: Int) {
                 color = iconTint!!
             }
         }
-        if(channelId != null) {
-            builder.setChannelId(channelId!!)
+        if(group != null) {
+            builder.setGroup(group!!.groupId.toString())
         }
         if(contentIntent != null) {
             builder.setContentIntent(contentIntent)
@@ -49,6 +50,9 @@ class Notification(var context: Context, var smallIcon: Int) {
     }
 
     fun showNotification(notificationId: Int, manager: NotificationManager) {
+        if(group != null) {
+            group!!.showGroupSummary(manager, this)
+        }
         manager.notify(notificationId, toNotificationCompat())
     }
 
