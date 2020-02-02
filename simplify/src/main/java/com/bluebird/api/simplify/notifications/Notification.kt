@@ -1,4 +1,4 @@
-package com.bluebird.apps.grouporg.api
+package com.bluebird.api.simplify.notifications
 
 import android.app.Activity
 import android.app.Notification
@@ -9,7 +9,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
-import com.bluebird.apps.simplify.notifications.NotificationGroup
 import kotlin.collections.ArrayList
 
 class Notification(var context: Context, var smallIcon: Int, var channelId: String) {

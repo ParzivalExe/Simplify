@@ -1,9 +1,8 @@
-package com.bluebird.apps.simplify.notifications
+package com.bluebird.api.simplify.notifications
 
 import android.app.NotificationManager
 import android.app.PendingIntent
 import androidx.core.app.NotificationCompat
-import com.bluebird.apps.grouporg.api.Notification
 
 class NotificationGroup(var groupId: Int, var groupTitle: String) {
 
