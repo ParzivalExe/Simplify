@@ -97,7 +97,7 @@ class Notification(var context: Context, var smallIcon: Int, var channelId: Stri
                 val intent = Intent(context, activity).apply {
                     action = actionId
                     if(intentExtras != null) {
-                        putExtras(intentExtras!!)
+                        putExtra("ExtraBundle", intentExtras)
                     }
                 }
                 return PendingIntent.getActivity(context, 0, intent, 0)
@@ -105,7 +105,7 @@ class Notification(var context: Context, var smallIcon: Int, var channelId: Stri
                 val intent = Intent(context, broadcastReceiver).apply {
                     action = actionId
                     if(intentExtras != null) {
-                        putExtras(intentExtras!!)
+                        putExtra("ExtraBundle", intentExtras)
                     }
                 }
                 return PendingIntent.getBroadcast(context, 0, intent, 0)
