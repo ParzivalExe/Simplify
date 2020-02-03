@@ -71,7 +71,7 @@ class Notification(var context: Context, var smallIcon: Int, var channelId: Stri
         var actionIcon: Int
         var actionText: String
         var context: Context
-        var intentExtras: Bundle? = null
+        var intentExtras: Intent? = null
 
 
         constructor(actionClass: Class<Object>, actionId: String, actionIcon: Int, actionText: String, context: Context) {
@@ -88,25 +88,21 @@ class Notification(var context: Context, var smallIcon: Int, var channelId: Stri
             this.context = context
         }
 
-        constructor(actionClass: Class<Object>, actionId: String, actionIcon: Int, actionText: String, context: Context, extras: Bundle) : this(actionClass, actionId, actionIcon, actionText, context) {
-            this.intentExtras = extras
+        constructor(actionClass: Class<Object>, actionId: String, actionIcon: Int, actionText: String, context: Context, intent: Intent) : this(actionClass, actionId, actionIcon, actionText, context) {
+            this.intentExtras = intent
         }
 
         fun getIntent(): PendingIntent? {
             if(activity != null) {
                 val intent = Intent(context, activity).apply {
                     action = actionId
-                    if(intentExtras != null) {
-                        putExtra("ExtraBundle", intentExtras)
-                    }
+                    intentExtras?.let { putExtras(it) }
                 }
                 return PendingIntent.getActivity(context, 0, intent, 0)
             }else if(broadcastReceiver != null) {
                 val intent = Intent(context, broadcastReceiver).apply {
                     action = actionId
-                    if(intentExtras != null) {
-                        putExtra("ExtraBundle", intentExtras)
-                    }
+                    intentExtras?.let { putExtras(it) }
                 }
                 return PendingIntent.getBroadcast(context, 0, intent, 0)
             }
