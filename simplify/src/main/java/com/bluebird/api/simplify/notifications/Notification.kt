@@ -104,7 +104,8 @@ class Notification(var context: Context, var smallIcon: Int, var channelId: Stri
                     action = actionId
                     intentExtras?.let { putExtras(it) }
                 }
-                return PendingIntent.getBroadcast(context, 0, intent, 0)
+                return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
+                )
             }
             return null
         }
