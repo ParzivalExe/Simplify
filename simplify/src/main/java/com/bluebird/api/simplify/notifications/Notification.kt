@@ -54,7 +54,7 @@ class Notification(var notificationId: Int, var context: Context, var smallIcon:
 
     fun showNotification(manager: NotificationManager) {
         if(group != null) {
-            group!!.addNotificationToGroup(this)
+            group!!.showGroupSummary(manager, this)
         }
         manager.notify(notificationId, toNotificationCompat())
     }
