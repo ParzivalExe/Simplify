@@ -104,8 +104,7 @@ class Notification(var notificationId: Int, var context: Context, var smallIcon:
                     action = actionId
                     extraBundle?.let { putExtras(it) }
                 }
-                return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
-                )
+                return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
             }
             return null
         }
