@@ -15,7 +15,7 @@ import kotlin.collections.ArrayList
 import kotlin.math.acos
 
 @Suppress("unused")
-class Notification(var context: Context, var smallIcon: Int, var channelId: String) {
+class Notification(var notificationId: Int, var context: Context, var smallIcon: Int, var channelId: String) {
 
     var messageTitle: String = "ValuesNotSet"
     var messageText: String = "Set a messageTitle and messageText for this notification to get rid of this default-text"
@@ -24,7 +24,7 @@ class Notification(var context: Context, var smallIcon: Int, var channelId: Stri
     var iconTint: Int? = null
     var group: NotificationGroup? = null
 
-    constructor(context: Context, smallIcon: Int, messageTitle: String, messageText: String, channelId: String): this(context, smallIcon, channelId) {
+    constructor(notificationId: Int, context: Context, smallIcon: Int, messageTitle: String, messageText: String, channelId: String): this(notificationId, context, smallIcon, channelId) {
         this.messageTitle = messageTitle
         this.messageText =  messageText
         this.channelId = channelId
@@ -52,9 +52,9 @@ class Notification(var context: Context, var smallIcon: Int, var channelId: Stri
         return builder.build()
     }
 
-    fun showNotification(notificationId: Int, manager: NotificationManager) {
+    fun showNotification(manager: NotificationManager) {
         if(group != null) {
-            group!!.showGroupSummary(manager, this)
+            group!!.addNotificationToGroup(this)
         }
         manager.notify(notificationId, toNotificationCompat())
     }
@@ -71,7 +71,7 @@ class Notification(var context: Context, var smallIcon: Int, var channelId: Stri
         var actionIcon: Int
         var actionText: String
         var context: Context
-        var intentExtras: Intent? = null
+        var extraBundle: Bundle? = null
 
 
         constructor(actionClass: Class<Object>, actionId: String, actionIcon: Int, actionText: String, context: Context) {
@@ -88,21 +88,21 @@ class Notification(var context: Context, var smallIcon: Int, var channelId: Stri
             this.context = context
         }
 
-        constructor(actionClass: Class<Object>, actionId: String, actionIcon: Int, actionText: String, context: Context, intent: Intent) : this(actionClass, actionId, actionIcon, actionText, context) {
-            this.intentExtras = intent
+        constructor(actionClass: Class<Object>, actionId: String, actionIcon: Int, actionText: String, context: Context, extraBundle: Bundle) : this(actionClass, actionId, actionIcon, actionText, context) {
+            this.extraBundle = extraBundle
         }
 
         fun getIntent(): PendingIntent? {
             if(activity != null) {
                 val intent = Intent(context, activity).apply {
                     action = actionId
-                    intentExtras?.let { putExtras(it) }
+                    extraBundle?.let { putExtras(it) }
                 }
                 return PendingIntent.getActivity(context, 0, intent, 0)
             }else if(broadcastReceiver != null) {
                 val intent = Intent(context, broadcastReceiver).apply {
                     action = actionId
-                    intentExtras?.let { putExtras(it) }
+                    extraBundle?.let { putExtras(it) }
                 }
                 return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
                 )
